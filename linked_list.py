@@ -1,6 +1,6 @@
 from typing import Any, Optional
 
-
+print('hello')
 class Node:
     def __init__(self, data: Any, next_node: Optional["Node"] = None):
         self.data = data
