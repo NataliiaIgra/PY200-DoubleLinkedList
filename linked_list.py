@@ -1,7 +1,6 @@
 from typing import Any, Optional
 
-print('hello')
-print('crocodile')
+
 class Node:
     def __init__(self, data: Any, next_node: Optional["Node"] = None):
         self.data = data
@@ -20,28 +19,6 @@ class Node:
             raise ValueError
 
         self._next_node = value
-
-
-class DoubleNode(Node):
-    def __init__(
-            self, data: Any, next_node: Optional["Node"] = None, prev_node: Optional["Node"] = None
-    ):
-        super().__init__(data, next_node)
-        self.prev_node = prev_node
-
-    def __str__(self):
-        return f"[{self.data}]"
-
-    @property
-    def prev_node(self):
-        return self._prev_node
-
-    @prev_node.setter
-    def prev_node(self, value):
-        if value is not None and not isinstance(value, Node):
-            raise ValueError
-
-        self._prev_node = value
 
 
 # не используется
@@ -158,18 +135,21 @@ class LinkedList:
                     node.next_node = node.next_node.next_node
 
 
-ll = LinkedList()
-ll.append("a")
-ll.append("b")
-ll.append("c")
-ll.append("d")
-ll.append("e")
-print(ll)
-ll[2] = "g"
-print(ll)
-# ll.insert("6", 5)
-# ll.insert("6", 2)
-# ll.insert("6", 0)
-# print(ll)
+def main():
+    ll = LinkedList()
+    ll.append("a")
+    ll.append("b")
+    ll.append("c")
+    ll.append("d")
+    ll.append("e")
+    print(ll)
+    ll[2] = "g"
+    print(ll)
+    # ll.insert("6", 5)
+    # ll.insert("6", 2)
+    # ll.insert("6", 0)
+    # print(ll)
 
 
+if __name__ == '__main__':
+    main()
