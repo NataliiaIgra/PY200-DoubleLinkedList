@@ -1,4 +1,5 @@
 from typing import Any, Optional
+import sys
 
 
 class Node:
@@ -8,6 +9,9 @@ class Node:
 
     def __str__(self):
         return f"({self.data})"
+
+    def __repr__(self):
+        return f"{type(self).__name__}({self.data})"
 
     @property
     def next_node(self):
@@ -21,51 +25,39 @@ class Node:
         self._next_node = value
 
 
-# не используется
-class LinkedListIterator:
-    def __init__(self, head):
-        self.current = head
-
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration
-
-        node = self.current
-        self.current = self.current.next_node
-        return node.data
-
-    def __iter__(self):
-        return self
-
-
 class LinkedList:
     def __init__(self):
         self.head = None
         self._size = 0
+        self.tail = None  # ToDo добавить tail в LinkedList
 
     def __str__(self):
         return "->".join(str(node) for node in self._node_iter())
 
+    def __repr__(self):
+        string = ",".join(repr(node) for node in self._node_iter())
+        return f"{type(self).__name__}[{string}]"
+
     def __len__(self):
         return self._size
 
-    def __getitem__(self, item):
-        if not isinstance(item, int):
-            raise TypeError
+    def __getitem__(self, index):
+        if not isinstance(index, int):
+            raise TypeError('Linked list indices must be integers')
 
-        if item >= len(self) or item < 0:
-            raise IndexError
+        if index >= len(self) or index < 0:
+            raise IndexError('Linked list index is out of range')
 
         for i, node in enumerate(self._node_iter()):
-            if i == item:
+            if i == index:
                 return node.data
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key, value):  # обновляет именно данные в Node
         if not isinstance(key, int):
-            raise TypeError
+            raise TypeError('Linked list indices must be integers')
 
         if key >= len(self) or key < 0:
-            raise IndexError
+            raise IndexError('Linked list index is out of range')
 
         for i, node in enumerate(self._node_iter()):
             if i == key:
@@ -96,9 +88,12 @@ class LinkedList:
 
         self._size += 1
 
-    def insert(self, data, index=0):
+    def insert(self, data: Any, index=0):
+        if not isinstance(index, int):
+            raise TypeError('Linked list indices must be integers')
+
         if index < 0 or index > self._size:
-            raise ValueError
+            raise ValueError('Linked list index is out of range')
 
         new_node = Node(data)
         self._size += 1
@@ -120,11 +115,14 @@ class LinkedList:
             if node.data == data:
                 return i
 
-        raise ValueError
+        raise ValueError(f'{data} is not in linked list')
 
     def delete(self, index: int):
+        if not isinstance(index, int):
+            raise TypeError('Linked list indices must be integers')
+
         if index < 0 or index >= self._size:
-            raise ValueError
+            raise ValueError('Linked list index is out of range')
 
         self._size -= 1
         if index == 0:
@@ -134,6 +132,22 @@ class LinkedList:
                 if i == index - 1:
                     node.next_node = node.next_node.next_node
 
+    def remove(self, data: Any):
+        found_index = self.index(data)
+        self.delete(found_index)
+
+    def sort(self):
+        sorted_list = sorted(self)
+        for index, node in enumerate(sorted_list):
+            self[index] = node
+
+    def is_iterable(self):
+        check = hasattr(self, '__iter__')
+        return check
+
+# ToDo Поменять append
+# ToDo Документация
+
 
 def main():
     ll = LinkedList()
@@ -142,13 +156,9 @@ def main():
     ll.append("c")
     ll.append("d")
     ll.append("e")
-    print(ll)
-    ll[2] = "g"
-    print(ll)
-    # ll.insert("6", 5)
-    # ll.insert("6", 2)
-    # ll.insert("6", 0)
-    # print(ll)
+    ll.append("f")
+    ll.append("g")
+    print(sys.getrefcount(ll))
 
 
 if __name__ == '__main__':
