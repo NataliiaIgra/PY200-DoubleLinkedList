@@ -13,22 +13,18 @@ class DoubleNode(Node):
 
     @property
     def prev_node(self):
-        return self._prev_node
+        return self._prev_node()
 
     @prev_node.setter
-    def prev_node(self, value):
-        if value is not None and not isinstance(value, Node):
-            raise ValueError
-        if value is not None:
-            self._prev_node = weakref.ref(value)
+    def prev_node(self, data):
+        super()._check_instance(data)
+        if data is not None:
+            self._prev_node = weakref.ref(data)
         else:
-            self._prev_node = value
+            self._prev_node = data
 
 
 class DoubleLinkedList(LinkedList):
-    def __init__(self):
-        super().__init__()
-
     def __str__(self):
         return "<->".join(str(node) for node in self._node_iter())
 
@@ -46,9 +42,16 @@ class DoubleLinkedList(LinkedList):
 
         self._size += 1
 
+    def insert(self, data: Any, index=0):
+        ...
+
+
+
+
 
 def main():
     dll = DoubleLinkedList()
+    a = DoubleNode('brrra')
     dll.append("a")
     dll.append("b")
     dll.append("c")
@@ -56,6 +59,7 @@ def main():
     dll.append("e")
     dll.append("f")
     dll.append("g")
+    print(dll.head.next_node.prev_node)
 
 
 if __name__ == '__main__':

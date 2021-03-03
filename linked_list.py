@@ -13,22 +13,25 @@ class Node:
     def __repr__(self):
         return f"{type(self).__name__}({self.data})"
 
+    @staticmethod
+    def _check_instance(data):
+        if data is not None and not isinstance(data, Node):
+            raise TypeError('you can only use None or instances of class Node')
+
     @property
     def next_node(self):
         return self._next_node
 
     @next_node.setter
-    def next_node(self, value):
-        if value is not None and not isinstance(value, Node):
-            raise ValueError
-
-        self._next_node = value
+    def next_node(self, data):
+        self._check_instance(data)
+        self._next_node = data
 
 
 class LinkedList:
     def __init__(self):
-        self.head = None
         self._size = 0
+        self.head = None
         self.tail = None  # ToDo добавить tail в LinkedList
 
     def __str__(self):
@@ -41,27 +44,32 @@ class LinkedList:
     def __len__(self):
         return self._size
 
-    def __getitem__(self, index):
+    @staticmethod
+    def _check_index(index):
         if not isinstance(index, int):
-            raise TypeError('Linked list indices must be integers')
+            raise TypeError('list indices must be integers')
 
-        if index >= len(self) or index < 0:
-            raise IndexError('Linked list index is out of range')
+    def _check_index_greater_equal(self, index):
+        if index < 0 or index >= len(self):
+            raise IndexError('list index is out of range')
 
+    def _check_index_greater(self, index):
+        if index < 0 or index > len(self):
+            raise IndexError('list index is out of range')
+
+    def __getitem__(self, index):
+        self._check_index(index)
+        self._check_index_greater_equal(index)
         for i, node in enumerate(self._node_iter()):
             if i == index:
                 return node.data
 
-    def __setitem__(self, key, value):  # обновляет именно данные в Node
-        if not isinstance(key, int):
-            raise TypeError('Linked list indices must be integers')
-
-        if key >= len(self) or key < 0:
-            raise IndexError('Linked list index is out of range')
-
+    def __setitem__(self, index, data):  # обновляет именно данные в Node
+        self._check_index(index)
+        self._check_index_greater_equal(index)
         for i, node in enumerate(self._node_iter()):
-            if i == key:
-                node.data = value
+            if i == index:
+                node.data = data
 
     def __delitem__(self, key):
         self.delete(key)
@@ -86,14 +94,12 @@ class LinkedList:
         else:
             self.head = new_node
 
+        self.tail = new_node
         self._size += 1
 
     def insert(self, data: Any, index=0):
-        if not isinstance(index, int):
-            raise TypeError('Linked list indices must be integers')
-
-        if index < 0 or index > self._size:
-            raise ValueError('Linked list index is out of range')
+        self._check_index(index)
+        self._check_index_greater(index)
 
         new_node = Node(data)
         self._size += 1
@@ -109,20 +115,18 @@ class LinkedList:
     def clear(self):
         self._size = 0
         self.head = None
+        self.tail = None
 
     def index(self, data: Any):
         for i, node in enumerate(self._node_iter()):
             if node.data == data:
                 return i
 
-        raise ValueError(f'{data} is not in linked list')
+        raise ValueError(f'{data} is not in the list')
 
     def delete(self, index: int):
-        if not isinstance(index, int):
-            raise TypeError('Linked list indices must be integers')
-
-        if index < 0 or index >= self._size:
-            raise ValueError('Linked list index is out of range')
+        self._check_index(index)
+        self._check_index_greater_equal(index)
 
         self._size -= 1
         if index == 0:
@@ -136,11 +140,6 @@ class LinkedList:
         found_index = self.index(data)
         self.delete(found_index)
 
-    def sort(self):
-        sorted_list = sorted(self)
-        for index, node in enumerate(sorted_list):
-            self[index] = node
-
     def is_iterable(self):
         check = hasattr(self, '__iter__')
         return check
@@ -150,6 +149,8 @@ class LinkedList:
 
 
 def main():
+    a = Node("a")
+    a.next_node = Node("b")
     ll = LinkedList()
     ll.append("a")
     ll.append("b")
@@ -158,7 +159,11 @@ def main():
     ll.append("e")
     ll.append("f")
     ll.append("g")
-    print(sys.getrefcount(ll))
+    ll.insert("aaa")
+    ll.insert("aaa", 8)
+    ll.delete(8)
+    ll.remove('aaa')
+    print(ll.tail)
 
 
 if __name__ == '__main__':
