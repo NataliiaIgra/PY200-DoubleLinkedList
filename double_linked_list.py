@@ -1,7 +1,7 @@
-import sys
 import weakref
 from typing import Any, Optional
 from linked_list import Node, LinkedList
+# ToDo Документация
 
 
 class DoubleNode(Node):
@@ -13,7 +13,10 @@ class DoubleNode(Node):
 
     @property
     def prev_node(self):
-        return self._prev_node()
+        if self._prev_node is not None:
+            return self._prev_node()
+        else:
+            return self._prev_node
 
     @prev_node.setter
     def prev_node(self, data):
@@ -25,6 +28,10 @@ class DoubleNode(Node):
 
 
 class DoubleLinkedList(LinkedList):
+    def __init__(self):
+        super().__init__()
+        self.tail = None
+
     def __str__(self):
         return "<->".join(str(node) for node in self._node_iter())
 
@@ -43,15 +50,53 @@ class DoubleLinkedList(LinkedList):
         self._size += 1
 
     def insert(self, data: Any, index=0):
-        ...
+        super()._check_index(index)
+        super()._check_index_greater(index)
 
+        new_node = DoubleNode(data)
 
+        self._size += 1
 
+        if index == len(self) - 1:
+            self.tail = new_node
+        if index == 0:
+            new_node.next_node = self.head
+            self.head.prev_node = new_node
+            self.head = new_node
+        else:
+            for i, node in enumerate(self._node_iter()):
+                if i == index - 1:
+                    if node.next_node is not None:
+                        node.next_node.prev_node = new_node
+                        new_node.next_node = node.next_node
+                    node.next_node = new_node
+                    new_node.prev_node = node
+
+    def delete(self, index: int):
+        super()._check_index(index)
+        super()._check_index_greater_equal(index)
+
+        self._size -= 1
+        if index == 0:
+            self.head = self.head.next_node
+        else:
+            for i, node in enumerate(self._node_iter()):
+                if i == index - 1:
+                    if node.next_node.next_node is None:
+                        self.tail = node
+                        self.tail.prev_node = node.prev_node
+                        self.tail.next_node = None
+                    else:
+                        node.next_node = node.next_node.next_node
+                        node.next_node.next_node.prev_node = node
+
+    def clear(self):
+        super().clear()
+        self.tail = None
 
 
 def main():
     dll = DoubleLinkedList()
-    a = DoubleNode('brrra')
     dll.append("a")
     dll.append("b")
     dll.append("c")
@@ -59,7 +104,15 @@ def main():
     dll.append("e")
     dll.append("f")
     dll.append("g")
-    print(dll.head.next_node.prev_node)
+    dll[6] = 'brrr'
+    print(dll)
+    print(dll.tail)
+    print(repr(dll))
+    print(dll.is_iterable())
+    dll.remove("brrr")
+    print(dll, dll.tail)
+    dll.clear()
+    print(dll.tail)
 
 
 if __name__ == '__main__':

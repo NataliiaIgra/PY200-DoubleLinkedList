@@ -1,5 +1,5 @@
 from typing import Any, Optional
-import sys
+# ToDo Документация
 
 
 class Node:
@@ -32,7 +32,6 @@ class LinkedList:
     def __init__(self):
         self._size = 0
         self.head = None
-        self.tail = None  # ToDo добавить tail в LinkedList
 
     def __str__(self):
         return "->".join(str(node) for node in self._node_iter())
@@ -60,6 +59,7 @@ class LinkedList:
     def __getitem__(self, index):
         self._check_index(index)
         self._check_index_greater_equal(index)
+
         for i, node in enumerate(self._node_iter()):
             if i == index:
                 return node.data
@@ -67,6 +67,7 @@ class LinkedList:
     def __setitem__(self, index, data):  # обновляет именно данные в Node
         self._check_index(index)
         self._check_index_greater_equal(index)
+
         for i, node in enumerate(self._node_iter()):
             if i == index:
                 node.data = data
@@ -94,7 +95,6 @@ class LinkedList:
         else:
             self.head = new_node
 
-        self.tail = new_node
         self._size += 1
 
     def insert(self, data: Any, index=0):
@@ -115,7 +115,6 @@ class LinkedList:
     def clear(self):
         self._size = 0
         self.head = None
-        self.tail = None
 
     def index(self, data: Any):
         for i, node in enumerate(self._node_iter()):
@@ -144,9 +143,6 @@ class LinkedList:
         check = hasattr(self, '__iter__')
         return check
 
-# ToDo Поменять append
-# ToDo Документация
-
 
 def main():
     a = Node("a")
@@ -155,15 +151,6 @@ def main():
     ll.append("a")
     ll.append("b")
     ll.append("c")
-    ll.append("d")
-    ll.append("e")
-    ll.append("f")
-    ll.append("g")
-    ll.insert("aaa")
-    ll.insert("aaa", 8)
-    ll.delete(8)
-    ll.remove('aaa')
-    print(ll.tail)
 
 
 if __name__ == '__main__':
