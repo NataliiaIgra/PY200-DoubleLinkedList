@@ -1,4 +1,6 @@
 from typing import Any, Optional
+
+
 # ToDo Документация
 
 
@@ -138,20 +140,3 @@ class LinkedList:
     def remove(self, data: Any):
         found_index = self.index(data)
         self.delete(found_index)
-
-    def is_iterable(self):
-        check = hasattr(self, '__iter__')
-        return check
-
-
-def main():
-    a = Node("a")
-    a.next_node = Node("b")
-    ll = LinkedList()
-    ll.append("a")
-    ll.append("b")
-    ll.append("c")
-
-
-if __name__ == '__main__':
-    main()
