@@ -1,6 +1,9 @@
 from typing import Any, Optional
 
 
+# ToDo Документация
+
+
 class Node:
     def __init__(self, data: Any, next_node: Optional["Node"] = None):
         self.data = data
@@ -9,89 +12,67 @@ class Node:
     def __str__(self):
         return f"({self.data})"
 
+    def __repr__(self):
+        return f"{type(self).__name__}({self.data})"
+
+    @staticmethod
+    def _check_instance(data):
+        if data is not None and not isinstance(data, Node):
+            raise TypeError('you can only use None or instances of class Node')
+
     @property
     def next_node(self):
         return self._next_node
 
     @next_node.setter
-    def next_node(self, value):
-        if value is not None and not isinstance(value, Node):
-            raise ValueError
-
-        self._next_node = value
-
-
-class DoubleNode(Node):
-    def __init__(
-            self, data: Any, next_node: Optional["Node"] = None, prev_node: Optional["Node"] = None
-    ):
-        super().__init__(data, next_node)
-        self.prev_node = prev_node
-
-    def __str__(self):
-        return f"[{self.data}]"
-
-    @property
-    def prev_node(self):
-        return self._prev_node
-
-    @prev_node.setter
-    def prev_node(self, value):
-        if value is not None and not isinstance(value, Node):
-            raise ValueError
-
-        self._prev_node = value
-
-
-# не используется
-class LinkedListIterator:
-    def __init__(self, head):
-        self.current = head
-
-    def __next__(self):
-        if self.current is None:
-            raise StopIteration
-
-        node = self.current
-        self.current = self.current.next_node
-        return node.data
-
-    def __iter__(self):
-        return self
+    def next_node(self, data):
+        self._check_instance(data)
+        self._next_node = data
 
 
 class LinkedList:
     def __init__(self):
-        self.head = None
         self._size = 0
+        self.head = None
 
     def __str__(self):
         return "->".join(str(node) for node in self._node_iter())
 
+    def __repr__(self):
+        string = ",".join(repr(node) for node in self._node_iter())
+        return f"{type(self).__name__}[{string}]"
+
     def __len__(self):
         return self._size
 
-    def __getitem__(self, item):
-        if not isinstance(item, int):
-            raise TypeError
+    @staticmethod
+    def _check_index(index):
+        if not isinstance(index, int):
+            raise TypeError('list indices must be integers')
 
-        if item >= len(self) or item < 0:
-            raise IndexError
+    def _check_index_greater_equal(self, index):
+        if index < 0 or index >= len(self):
+            raise IndexError('list index is out of range')
+
+    def _check_index_greater(self, index):
+        if index < 0 or index > len(self):
+            raise IndexError('list index is out of range')
+
+    def __getitem__(self, index):
+        self._check_index(index)
+        self._check_index_greater_equal(index)
 
         for i, node in enumerate(self._node_iter()):
-            if i == item:
+            if i == index:
                 return node.data
 
-    def __setitem__(self, key, value):
-        if not isinstance(key, int):
-            raise TypeError
-
-        if key >= len(self) or key < 0:
-            raise IndexError
+    def __setitem__(self, index, data):  # обновляет именно данные в Node
+        self._check_index(index)
+        self._check_index_greater_equal(index)
 
         for i, node in enumerate(self._node_iter()):
-            if i == key:
-                node.data = value
+            if i == index:
+                node.data = data
 
     def __delitem__(self, key):
         self.delete(key)
@@ -118,9 +99,9 @@ class LinkedList:
 
         self._size += 1
 
-    def insert(self, data, index=0):
-        if index < 0 or index > self._size:
-            raise ValueError
+    def insert(self, data: Any, index=0):
+        self._check_index(index)
+        self._check_index_greater(index)
 
         new_node = Node(data)
         self._size += 1
@@ -142,11 +123,11 @@ class LinkedList:
             if node.data == data:
                 return i
 
-        raise ValueError
+        raise ValueError(f'{data} is not in the list')
 
     def delete(self, index: int):
-        if index < 0 or index >= self._size:
-            raise ValueError
+        self._check_index(index)
+        self._check_index_greater_equal(index)
 
         self._size -= 1
         if index == 0:
@@ -156,19 +137,6 @@ class LinkedList:
                 if i == index - 1:
                     node.next_node = node.next_node.next_node
 
-
-ll = LinkedList()
-ll.append("a")
-ll.append("b")
-ll.append("c")
-ll.append("d")
-ll.append("e")
-print(ll)
-ll[2] = "g"
-print(ll)
-# ll.insert("6", 5)
-# ll.insert("6", 2)
-# ll.insert("6", 0)
-# print(ll)
-
-
+    def remove(self, data: Any):
+        found_index = self.index(data)
+        self.delete(found_index)
